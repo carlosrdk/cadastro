@@ -15,7 +15,7 @@ import br.edu.iftm.tspi.cadastro.model.Cadastro;
 public class CadastroController {
 
     List<Cadastro> cadastros = new ArrayList<>();
-
+    int posicoesDeletadas = 0; // quando a função delete é utilizada, ela acaba diminuindo o comprimento do vetor, fazendo que o próximo cadastro tenha um id que já está sendo utilizado. Essa variável corrige o problema adicionando 1 à soma que gera o atributo ID pra cada vez que a função delete é utilizada.
 
     @GetMapping("/cadastro")
     public ModelAndView home() {
@@ -30,7 +30,7 @@ public class CadastroController {
             Cadastro selecionarCadastro = cadastros.stream().filter(cadastroSelecionado -> cadastro.getId().equals(cadastroSelecionado.getId())).findFirst().get();
             cadastros.set(cadastros.indexOf(selecionarCadastro), cadastro);
         } else {
-            Long id = cadastros.size() + 1L;
+            Long id = cadastros.size() + 1L + posicoesDeletadas;
             cadastros.add(new Cadastro(id, cadastro.getInputNome(), cadastro.getInputEmail(), cadastro.getInputEndereco(), cadastro.getInputTelefone()));
         
         }
@@ -54,6 +54,7 @@ public class CadastroController {
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable("id") Long id) {
         cadastros.removeIf(cadastro -> id.equals(cadastro.getId()));
+        posicoesDeletadas++;
         return "redirect:/listagem";  
     }
 }
